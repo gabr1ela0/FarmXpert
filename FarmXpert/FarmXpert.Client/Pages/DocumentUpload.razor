@@ -1,0 +1,91 @@
+@page "/document-upload"
+@rendermode InteractiveWebAssembly
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6 mb-10">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h4">Upload Document</MudText>
+        <MudPaper Class="p-4 rounded-lg" Elevation="1">
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.h6" Class="fw-semibold">@DocumentTitle</MudText>
+                <MudText Typo="Typo.body2">
+                    Please provide the <strong>@DocumentTitle</strong> to support your subsidy application. This document helps
+                    confirm that you meet the program requirements, so make sure that the uploaded file is clear, complete, and
+                    up to date.
+                </MudText>
+            </MudStack>
+        </MudPaper>
+
+        <MudPaper Class="p-4 rounded-lg" Elevation="0" Outlined="true">
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.subtitle1" Class="fw-semibold">Document example</MudText>
+                <MudText Typo="Typo.body2">
+                    Here is a placeholder area for an example or template of the expected document. Replace this preview with a
+                    sample file or illustration to guide applicants once it becomes available.
+                </MudText>
+                <div class="example-placeholder d-flex align-items-center justify-content-center text-center">
+                    <MudIcon Icon="@Icons.Material.Outlined.Description" Size="Size.Large" Class="me-2" />
+                    <MudText Typo="Typo.body2">Example preview goes here</MudText>
+                </div>
+            </MudStack>
+        </MudPaper>
+
+        <MudPaper Class="p-4 rounded-lg" Elevation="1">
+            <MudStack Spacing="3">
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.subtitle1" Class="fw-semibold">Submit your document</MudText>
+                    <MudText Typo="Typo.body2">
+                        Upload the completed <strong>@DocumentTitle</strong> in PDF, DOCX, or image format. You can drag and drop
+                        your file or use the button below to browse your computer.
+                    </MudText>
+                </MudStack>
+                <MudFileUpload T="IBrowserFile" FilesChanged="OnFileSelected" Class="upload-control">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Select file
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+                @if (!string.IsNullOrEmpty(_selectedFileName))
+                {
+                    <MudAlert Severity="Severity.Success" Variant="Variant.Outlined">
+                        ✅ @_selectedFileName has been added. Continue to submit your application when all required documents are
+                        uploaded.
+                    </MudAlert>
+                }
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+<style>
+    .example-placeholder {
+        border: 2px dashed rgba(0, 0, 0, 0.12);
+        border-radius: 12px;
+        min-height: 180px;
+        padding: 1.5rem;
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .upload-control {
+        width: 100%;
+    }
+</style>
+
+@code {
+    [SupplyParameterFromQuery(Name = "title")]
+    public string? Title { get; set; }
+
+    private string? _selectedFileName;
+
+    private string DocumentTitle => string.IsNullOrWhiteSpace(Title) ? "supporting document" : Title!;
+
+    private void OnFileSelected(IBrowserFile file)
+    {
+        if (file is null)
+        {
+            _selectedFileName = null;
+            return;
+        }
+
+        _selectedFileName = file.Name;
+    }
+}
